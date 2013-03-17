@@ -1,0 +1,50 @@
+# -*- coding: utf-8 -*-
+# Copyright (C) 2013 Peter Golm
+#
+# Authors:
+#  Peter Golm <golm.peter@gmail.com>
+#
+# This program is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation; version 3.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+
+from gi.repository import Gtk
+
+from hublinux.Constant import APP_NAME, WINDOW_SIZE
+from hublinux.ui.app.StatusIcon import StatusIcon
+from hublinux.ui.widgets.toolbar import Toolbar
+
+class Window(Gtk.ApplicationWindow):
+
+    def __init__(self, app):
+        super(Window, self).__init__(application=app)
+        self.application = app
+        self.statusIcon = StatusIcon(self.application)
+        self.layout = Gtk.Box()
+        self.toolBar = Toolbar()
+
+        self.set_default_size(WINDOW_SIZE[0], WINDOW_SIZE[1])
+        self.set_position(Gtk.WindowPosition.CENTER)
+        self.set_icon_from_file("../assets/icon.png")
+        self.set_title(APP_NAME)
+
+        self.__initUI()
+
+    def __initUI(self):
+        """
+        initialize the UI
+        """
+
+        self.layout.set_orientation(Gtk.Orientation.VERTICAL)
+        self.layout.pack_start(self.toolBar, False, True, 0)
+        self.layout.pack_start(Gtk.Label("Need implementation."), True, True, 0)
+        self.add(self.layout)
