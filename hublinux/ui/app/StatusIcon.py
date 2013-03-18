@@ -27,7 +27,7 @@ class StatusIcon(Gtk.StatusIcon):
         self.application = app
         self.menu = Gtk.Menu()
 
-        self.set_from_file("../assets/icon.png")
+        self.set_from_file("./assets/icon.png")
         self.__initMenu()
         self.connect("popup-menu", self.__onMenuShow)
 

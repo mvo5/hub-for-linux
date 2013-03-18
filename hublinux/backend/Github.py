@@ -26,10 +26,10 @@ from hublinux.Config import HubLinuxConfig
 class Github(object):
 
     @staticmethod
-    def __getGithub(login=None, password=None):
+    def getGithub(login=None, password=None):
         if login is None or password is None:
             login = HubLinuxConfig().login
-            password = HubLinuxConfig.password
+            password = HubLinuxConfig().password
 
         return github.Github(login_or_token=login, password=password)
 
@@ -37,7 +37,7 @@ class Github(object):
     def isValidCredentials(login, password):
         #noinspection PyBroadException
         try:
-            return Github.__getGithub(login, password).get_user().name is not None
+            return Github.getGithub(login, password).get_user().name is not None
         except Exception:
             pass
         return False

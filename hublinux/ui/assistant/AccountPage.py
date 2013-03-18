@@ -35,6 +35,7 @@ class AccountPage(Gtk.Box):
         super(AccountPage, self).__init__()
         self.assistant = assistant
 
+        # login ui
         self.loginEntry = Gtk.Entry()
         self.loginEntry.set_placeholder_text(_('username/email'))
 
@@ -44,13 +45,20 @@ class AccountPage(Gtk.Box):
         self.passwordEntry.set_placeholder_text(_('password'))
 
         self.loginButton = Gtk.Button()
-        self.loginButton.set_label(_('login'))
-        self.loginButton.connect('clicked', self.__doLogin)
 
-        self.__initUi()
+        # profile ui
+        self.loadProfileSpinner = Gtk.Spinner();
+        self.profileLabel = Gtk.Label()
+
+        self.logoutButton = Gtk.Button()
+
+        self.__initLoginUi()
         self.__initSignals()
 
     def __doLogin(self, *args):
+        self.__clearUI()
+        self.__initProfileUI()
+
         def async(self, login, password):
             isAuthed = Github.isValidCredentials(login, password)
 
@@ -58,8 +66,11 @@ class AccountPage(Gtk.Box):
             if isAuthed:
                 HubLinuxConfig().login = login
                 HubLinuxConfig().password = password
+                GLib.idle_add(self.__loadProfile)
             else:
                 HubLinuxConfig().clearCredentials()
+                GLib.idle_add(self.__clearUI)
+                GLib.idle_add(self.__initLoginUi)
 
             GLib.idle_add(self.assistant.set_page_complete, self, isAuthed)
 
@@ -68,10 +79,34 @@ class AccountPage(Gtk.Box):
         password = self.passwordEntry.get_text()
         threading.Thread(target=async, args=(self, login, password)).start()
 
+    def __loadProfile(self):
+        def async(self):
+            user = Github.getGithub().get_user()
+
+            text = '<b>' + user.name + '</b>\n'
+            text += _('%s plan (%i private repositories)') % (user.plan.name, user.total_private_repos)
+
+            GLib.idle_add(self.profileLabel.set_markup, text)
+            GLib.idle_add(self.loadProfileSpinner.stop)
+            GLib.idle_add(self.loadProfileSpinner.hide)
+
+        threading.Thread(target=async, args=(self, )).start()
+
+    def __doLogout(self, *args):
+        HubLinuxConfig().clearCredentials()
+        self.assistant.set_page_complete(self, False)
+        self.__clearUI()
+        self.__initLoginUi()
+
     def __onCancel(self, *args):
         HubLinuxConfig().clearCredentials()
 
-    def __initUi(self):
+    def __clearUI(self):
+        childWidgets = self.get_children()
+        for widget in childWidgets:
+            self.remove(widget)
+
+    def __initLoginUi(self):
         self.set_orientation(Gtk.Orientation.VERTICAL)
 
         # login box
@@ -96,10 +131,48 @@ class AccountPage(Gtk.Box):
         self.pack_start(self.passwordEntry, False, True, 0)
 
         #login button
+        self.loginButton.set_label(_('login'))
+        self.loginButton.connect('clicked', self.__doLogin)
+
         box = Gtk.Box()
         box.pack_start(self.loginButton, False, True, 0)
         box.pack_start(Gtk.Label(), True, True, 0)
         self.pack_start(box, False, True, 0)
+
+        self.show_all()
+
+    def __initProfileUI(self):
+        # init profile
+        title = Gtk.Label()
+        text = "<span size=\"larger\">%s</span>" % _('logged in as')
+        title.set_markup(text)
+
+        box = Gtk.Box()
+        box.pack_start(title, False, True, 0)
+        box.pack_start(Gtk.Label(), True, True, 0)
+        self.pack_start(box, False, True, 10)
+
+        profileBox = Gtk.Box()
+        profileBox.pack_start(self.loadProfileSpinner, False, True, 0)
+        #self.profileBox.pack_start(self.avatarImage, False, True, 0)
+        profileBox.pack_start(self.profileLabel, False, True, 5)
+
+        self.pack_start(profileBox, False, True, 0)
+
+        # logout button
+        self.logoutButton.set_label(_('logout'))
+        self.logoutButton.connect('clicked', self.__doLogout)
+
+        box = Gtk.Box()
+        box.pack_start(self.logoutButton, False, True, 0)
+        box.pack_start(Gtk.Label(), True, True, 0)
+        self.pack_start(box, False, True, 0)
+
+        #some space
+        self.pack_start(Gtk.Label(), False, True, 5)
+
+        self.show_all()
+        self.loadProfileSpinner.start()
 
     def __initSignals(self):
         self.assistant.connect('delete-event', self.__onCancel)

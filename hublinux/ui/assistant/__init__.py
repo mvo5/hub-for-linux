@@ -61,6 +61,7 @@ class InitialSetupAssistant(Gtk.Assistant):
         self.configPage = ConfigPage(self)
         self.append_page(self.configPage)
         self.set_page_title(self.configPage, _('Configuration'))
+        self.set_page_complete(self.configPage, True)
         self.set_page_type(self.configPage, Gtk.AssistantPageType.CONTENT)
 
         # summary
@@ -71,6 +72,10 @@ class InitialSetupAssistant(Gtk.Assistant):
         self.set_page_type(self.summaryPage, Gtk.AssistantPageType.SUMMARY)
 
     def __initSignals(self):
-        self.connect('close', self.loop.quit)
-        self.connect('delete-event', self.loop.quit)
-        self.connect('cancel', self.loop.quit)
+        self.connect('close', self.__onQuit)
+        self.connect('delete-event', self.__onQuit)
+        self.connect('cancel', self.__onQuit)
+
+    def __onQuit(self, *args):
+        self.destroy()
+        self.loop.quit()

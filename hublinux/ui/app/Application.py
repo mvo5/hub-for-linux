@@ -48,7 +48,7 @@ class Application(Gtk.Application):
     def do_activate(self):
         # only one instance
         if len(self.get_windows()) > 0:
-            image = os.path.realpath("../assets/icon.png")
+            image = os.path.realpath("./assets/icon.png")
             Notify.init(APP_NAME)
             notification = Notify.Notification.new(
                 APP_NAME,

@@ -48,11 +48,16 @@ from hublinux.ui.panel.ConfigPanel import ConfigPanel
 
 LOG = logging.getLogger(__name__)
 
-class ConfigPage(Gtk.Bin):
+class ConfigPage(Gtk.Box):
+
     def __init__(self, assistant):
         super(ConfigPage, self).__init__()
         self.assistant = assistant
 
         self.panel = ConfigPanel()
-        self.add(self.panel)
+        self.pack_start(self.panel, True, True, 0)
 
+        self.__initSignals()
+
+    def __initSignals(self):
+        self.assistant.connect('apply', self.panel.doApply)
