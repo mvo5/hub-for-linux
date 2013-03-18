@@ -30,14 +30,15 @@ class Window(Gtk.ApplicationWindow):
         self.application = app
         self.statusIcon = StatusIcon(self.application)
         self.layout = Gtk.Box()
-        self.toolBar = Toolbar()
+        self.toolBar = Toolbar(self.application)
 
         self.set_default_size(WINDOW_SIZE[0], WINDOW_SIZE[1])
         self.set_position(Gtk.WindowPosition.CENTER)
-        self.set_icon_from_file("../assets/icon.png")
+        self.set_icon_from_file("./assets/icon.png")
         self.set_title(APP_NAME)
 
         self.__initUI()
+        self.__initSignals()
 
     def __initUI(self):
         """
@@ -48,3 +49,10 @@ class Window(Gtk.ApplicationWindow):
         self.layout.pack_start(self.toolBar, False, True, 0)
         self.layout.pack_start(Gtk.Label("Need implementation."), True, True, 0)
         self.add(self.layout)
+
+    def __initSignals(self):
+        self.connect('delete-event', self.__onHide)
+
+    def __onHide(self, *args):
+        self.hide()
+        return args

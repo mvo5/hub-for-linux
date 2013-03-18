@@ -54,10 +54,10 @@ class StatusIcon(Gtk.StatusIcon):
         """
         toggle the app-window between show/hide
         """
-        if self.application.getWindow().get_visible():
-            self.application.getWindow().hide()
+        if self.application.window.get_visible():
+            self.application.window.hide()
         else:
-            self.application.getWindow().show()
+            self.application.window.show()
 
     def __onQuit(self, *args):
         """

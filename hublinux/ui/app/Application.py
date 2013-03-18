@@ -18,14 +18,21 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 
 import os
+import logging
 from gettext import gettext as _
 
-from gi.repository import Gtk, Notify
+from gi.repository import GLib, Gtk, Notify
 
 from hublinux.Constant import APP_ID, APP_NAME
 
-from hublinux.ui.app.AppMenu import AppMenu
+from hublinux.ui.menu.AppMenu import AppMenu
 from hublinux.ui.app.Window import Window
+
+from hublinux.ui.assistant import InitialSetupAssistant
+
+from hublinux.Config import HubLinuxConfig
+
+LOG = logging.getLogger(__name__)
 
 class Application(Gtk.Application):
     def __init__(self):
@@ -45,16 +52,26 @@ class Application(Gtk.Application):
             Notify.init(APP_NAME)
             notification = Notify.Notification.new(
                 APP_NAME,
-                _('Another instance of %s is running. You can start %s only once.') % (APP_NAME, APP_NAME),
+                _('Another instance of %(name)s is running. You can start %(name)s only once.') % {'name': APP_NAME},
                 image
             )
             notification.show()
             return
 
-        self.set_app_menu(self.appMenu)
+        # start setup if no login
+        if not HubLinuxConfig().hasLogin:
+            loop = GLib.MainLoop(GLib.main_context_default())
+            assistance = InitialSetupAssistant(loop)
+            assistance.show()
+            loop.run()
 
-        self.appWindow = Window(self)
-        self.appWindow.show_all()
+        # setup canceled?
+        if HubLinuxConfig().hasLogin:
+            self.set_app_menu(self.appMenu)
+            self.appWindow = Window(self)
+            self.appWindow.show_all()
+        else:
+            LOG.warning("No login credentials -> Exit")
 
     def do_startup(self):
         Gtk.Application.do_startup(self)

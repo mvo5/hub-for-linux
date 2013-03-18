@@ -4,11 +4,13 @@
 # Authors:
 #  Peter Golm <golm.peter@gmail.com>
 #
-# This program is free software; you can redistribute it and/or modify it under
+# This file is part of hub:linux.
+#
+# hub:linux is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
 # Foundation; version 3.
 #
-# This program is distributed in the hope that it will be useful, but WITHOUT
+# hub:linux is distributed in the hope that it will be useful, but WITHOUT
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
 # details.
@@ -19,18 +21,5 @@
 
 from gi.repository import Gtk
 
-from MenuButtonItem import MenuButtonItem
-
-class Toolbar(Gtk.Toolbar):
-    def __init__(self, app):
-        super(Gtk.Toolbar, self).__init__()
-        self.application = app
-        self.__initUI()
-
-    def __initUI(self):
-        separator = Gtk.SeparatorToolItem()
-        separator.set_expand(True)
-        self.insert(separator, -1)
-
-        self.menuItem = MenuButtonItem(self.application)
-        self.insert(self.menuItem, -1)
+class ConfigPanel(Gtk.Box):
+    pass

@@ -30,13 +30,15 @@ class AppMenu(Gio.Menu):
         self.append(_('Close'), 'app.close')
         self.append(_('Quit'), 'app.quit')
 
-        close_action = Gio.SimpleAction.new("close", None)
-        close_action.connect("activate", self.__onCloseClick)
-        self.application.add_action(close_action)
 
-        quit_action = Gio.SimpleAction.new("quit", None)
-        quit_action.connect("activate", self.__onQuitClick)
-        self.application.add_action(quit_action)
+
+        closeAction = Gio.SimpleAction.new("close", None)
+        closeAction.connect("activate", self.__onCloseClick)
+        self.application.add_action(closeAction)
+
+        quitAction = Gio.SimpleAction.new("quit", None)
+        quitAction.connect("activate", self.__onQuitClick)
+        self.application.add_action(quitAction)
 
     def __onCloseClick(self, *args):
         self.application.window.hide()

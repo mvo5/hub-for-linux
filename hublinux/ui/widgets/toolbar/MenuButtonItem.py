@@ -22,8 +22,9 @@ from gi.repository import Gtk, Gio
 from hublinux.ui.menu import ToolbarMenu
 class MenuButtonItem(Gtk.ToolItem):
 
-    def __init__(self):
+    def __init__(self, app):
         super(MenuButtonItem, self).__init__()
+        self.application = app
 
         self.__initUI()
 
@@ -34,7 +35,7 @@ class MenuButtonItem(Gtk.ToolItem):
         icon.set_from_stock(Gtk.STOCK_PROPERTIES, Gtk.IconSize.LARGE_TOOLBAR)
         self.menuButton.set_image(icon)
         self.menuButton.set_halign(Gtk.Align.END) # FIXME: don't work, why?
-        self.menuButton.set_menu_model(ToolbarMenu())
+        self.menuButton.set_menu_model(ToolbarMenu(self.application))
         self.menuButton.set_relief(Gtk.ReliefStyle.NONE)
 
         self.add(self.menuButton)
