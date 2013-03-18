@@ -19,12 +19,18 @@
 # this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 
+import httplib2
+import tempfile
+
 import github
 
+#noinspection PyUnresolvedReferences
+from gi.repository.GdkPixbuf import PixbufLoader, InterpType
+
+from hublinux.Constant import APP_ID
 from hublinux.Config import HubLinuxConfig
 
 class Github(object):
-
     @staticmethod
     def getGithub(login=None, password=None):
         if login is None or password is None:
@@ -41,3 +47,22 @@ class Github(object):
         except Exception:
             pass
         return False
+
+    @staticmethod
+    def getAvatarPixbuf(avatarObj=None, size=None):
+        if avatarObj is None:
+            avatarObj = Github.getGithub().get_user()
+
+        url = avatarObj.avatar_url
+
+        client = httplib2.Http(cache=tempfile.gettempdir() + "/" + APP_ID)
+        resp, content = client.request(url)
+
+        loader = PixbufLoader()
+        loader.write(content)
+        loader.close()
+
+        if size is None:
+            return loader.get_pixbuf()
+        else:
+            return loader.get_pixbuf().scale_simple(size[0], size[1], InterpType.BILINEAR)

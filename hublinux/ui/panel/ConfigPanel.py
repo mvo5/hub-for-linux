@@ -56,5 +56,5 @@ class ConfigPanel(Gtk.Box):
         self.pack_start(box, False, True, 0)
         self.pack_start(self.gitDirButton, False, True, 0)
 
-    def doApply(self):
+    def doApply(self, *args):
         HubLinuxConfig().gitPath = self.gitDirButton.get_filename()

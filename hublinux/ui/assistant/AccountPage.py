@@ -47,7 +47,8 @@ class AccountPage(Gtk.Box):
         self.loginButton = Gtk.Button()
 
         # profile ui
-        self.loadProfileSpinner = Gtk.Spinner();
+        self.loadProfileSpinner = Gtk.Spinner()
+        self.profileImage = Gtk.Image()
         self.profileLabel = Gtk.Label()
 
         self.logoutButton = Gtk.Button()
@@ -81,12 +82,19 @@ class AccountPage(Gtk.Box):
 
     def __loadProfile(self):
         def async(self):
+            # load infos
             user = Github.getGithub().get_user()
 
             text = '<b>' + user.name + '</b>\n'
             text += _('%s plan (%i private repositories)') % (user.plan.name, user.total_private_repos)
 
             GLib.idle_add(self.profileLabel.set_markup, text)
+
+            # load image
+            imagePixbuf = Github.getAvatarPixbuf(Github.getGithub().get_user(), (48, 48))
+            GLib.idle_add(self.profileImage.set_from_pixbuf, imagePixbuf)
+
+            # stop spinner
             GLib.idle_add(self.loadProfileSpinner.stop)
             GLib.idle_add(self.loadProfileSpinner.hide)
 
@@ -154,7 +162,7 @@ class AccountPage(Gtk.Box):
 
         profileBox = Gtk.Box()
         profileBox.pack_start(self.loadProfileSpinner, False, True, 0)
-        #self.profileBox.pack_start(self.avatarImage, False, True, 0)
+        profileBox.pack_start(self.profileImage, False, True, 0)
         profileBox.pack_start(self.profileLabel, False, True, 5)
 
         self.pack_start(profileBox, False, True, 0)

@@ -62,7 +62,7 @@ class InitialSetupAssistant(Gtk.Assistant):
         self.append_page(self.configPage)
         self.set_page_title(self.configPage, _('Configuration'))
         self.set_page_complete(self.configPage, True)
-        self.set_page_type(self.configPage, Gtk.AssistantPageType.CONTENT)
+        self.set_page_type(self.configPage, Gtk.AssistantPageType.CONFIRM)
 
         # summary
         self.summaryPage = SummaryPage()
