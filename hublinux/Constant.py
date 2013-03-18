@@ -17,8 +17,12 @@
 # this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 
+import tempfile
+
 APP_ID = "app.hub4linux"
 APP_NAME = "hub:linux"
+
+CACHE_DIR = tempfile.gettempdir() + "/" + APP_ID
 
 WINDOW_SIZE = (800,600)
 

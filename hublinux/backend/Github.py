@@ -27,10 +27,11 @@ import github
 #noinspection PyUnresolvedReferences
 from gi.repository.GdkPixbuf import PixbufLoader, InterpType
 
-from hublinux.Constant import APP_ID
+from hublinux.Constant import CACHE_DIR
 from hublinux.Config import HubLinuxConfig
 
 class Github(object):
+
     @staticmethod
     def getGithub(login=None, password=None):
         if login is None or password is None:
@@ -55,7 +56,7 @@ class Github(object):
 
         url = avatarObj.avatar_url
 
-        client = httplib2.Http(cache=tempfile.gettempdir() + "/" + APP_ID)
+        client = httplib2.Http(cache=CACHE_DIR)
         resp, content = client.request(url)
 
         loader = PixbufLoader()
