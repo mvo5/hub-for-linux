@@ -17,12 +17,14 @@
 # this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 
-import tempfile
+import os
 
 APP_ID = "app.hub4linux"
 APP_NAME = "hub:linux"
 
-CACHE_DIR = tempfile.gettempdir() + "/" + APP_ID
+APP_DIR = os.path.expanduser("~/.hub4linux")
+DATABASE_FILE = APP_DIR + "data.db"
+CACHE_DIR = APP_DIR + "/cache"
 
 WINDOW_SIZE = (800,600)
 
