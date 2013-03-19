@@ -4,7 +4,7 @@ A "Github for Windows/Mac" clone for linux.
 
 requirements
 ============
-see [REQUIREMENTS]()
+see [REQUIREMENTS](https://github.com/pgolm/hub-for-linux/blob/master/REQUIREMENTS)
 
 todo
 ====
