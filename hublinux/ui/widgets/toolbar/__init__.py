@@ -21,6 +21,7 @@ from gi.repository import Gtk
 
 from MenuButtonItem import MenuButtonItem
 from ProfileImageToolItem import ProfileImageToolItem
+from RefreshButtomItem import RefreshButtonItem
 
 class Toolbar(Gtk.Toolbar):
     def __init__(self, app):
@@ -33,8 +34,7 @@ class Toolbar(Gtk.Toolbar):
         separator.set_expand(True)
         self.insert(separator, -1)
 
-        self.refreshItem = Gtk.ToolButton()
-        self.refreshItem.set_stock_id(Gtk.STOCK_REFRESH)
+        self.refreshItem = RefreshButtonItem()
         self.insert(self.refreshItem, -1)
 
         self.menuItem = MenuButtonItem(self.application)

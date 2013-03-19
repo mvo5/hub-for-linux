@@ -19,40 +19,74 @@
 # this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 
-import abc
+from gi.repository import GObject, GLib
 
-class Provider(object):
-    __metaclass__ = abc.ABCMeta
+class Provider(GObject.GObject):
 
-    @abc.abstractproperty
+    def __init__(self):
+        super(Provider, self).__init__()
+
+    @property
     def sources(self):
         """
         :return: list of :class: SourceProvider
         """
-        return
+        raise NotImplementedError
 
-class SourceProvider(object):
-    __metaclass__ = abc.ABCMeta
+class SourceProvider(GObject.GObject):
+    __gsignals__ = {
+        'add-repository' : (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE,(GObject.TYPE_INT,)),
+        'remove-repository' : (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE,()),
+        'update-repository' : (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE,())
+    }
 
-    @abc.abstractproperty
+    def __init__(self):
+        self.__repositoryList = []
+        self.doScanRepositories()
+
+        super(SourceProvider, self).__init__()
+
+    @property
     def image(self):
-        return None
+        raise NotImplementedError
 
-    @abc.abstractproperty
+    @property
     def name(self):
-        return None
+        raise NotImplementedError
 
-    @abc.abstractproperty
+    @property
     def repositories(self):
-        return None
+        return self.__repositoryList
 
-class RepositoryProvider(object):
-    __metaclass__ = abc.ABCMeta
+    def doScanRepositories(self):
+        raise NotImplementedError
 
-    @abc.abstractproperty
+    def _getRepositoryProvider(self, repo):
+        raise NotImplementedError
+
+    def _findRepository(self, repo):
+        def func(self, repo):
+            repo = self._getRepositoryProvider(repo)
+            if repo not in self.__repositoryList:
+                self.__repositoryList.append(repo)
+                pos = len(self.__repositoryList) - 1
+                self.emit('add-repository', pos)
+
+        GLib.idle_add(func, self, repo)
+
+class RepositoryProvider(GObject.GObject):
+
+    def __eq__(self, other):
+        return self.id == other.id
+
+    @property
+    def id(self):
+        raise NotImplementedError
+
+    @property
     def name(self):
-        return None
+        raise NotImplementedError
 
-    @abc.abstractproperty
+    @property
     def description(self):
-        return None
+        raise NotImplementedError

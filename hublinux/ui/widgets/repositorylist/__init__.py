@@ -20,25 +20,46 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 
 import re
-import threading
 
 from gi.repository import Gtk, GLib
 
 class RepositoryList(Gtk.Box):
+
     def __init__(self, sourceProvider):
         super(RepositoryList, self).__init__()
         self.sourceProvider = sourceProvider
 
         self.searchEntry = Gtk.SearchEntry()
         self.sourceStore = Gtk.ListStore(str)
-        self.sourceList = Gtk.TreeView(self.sourceStore)
+
+        self.sourceList = Gtk.TreeView(self.sourceStore.filter_new())
 
         self.set_orientation(Gtk.Orientation.VERTICAL)
         self.sourceList.set_headers_visible(False)
 
         self.__initUI()
-        self.__loadList()
+        self.sourceProvider.connect('add-repository', self.__onAddRepository)
         self.searchEntry.connect('changed', self.__onChange)
+
+        self.__loadList()
+
+    def __onAddRepository(self, provider, pos):
+        self.__addRepository(provider.repositories[pos])
+
+    def __addRepository(self, repo):
+        text = "<span weight=\"bold\">%s</span>\n<span size=\"smaller\" weight=\"light\">%s</span>" % (
+            repo.name, repo.description)
+        self.sourceStore.append([text])
+
+        self.sourceList.set_model(self.sourceStore.filter_new())
+        self.__setFilter()
+        self.sourceList.show_all()
+
+    def __setFilter(self):
+        def filter_func(model, iter, *args):
+            search = '.*' + self.searchEntry.get_text().lower() + '.*'
+            return re.match(search, model.get_value(iter, 0).lower()) is not None
+        self.sourceList.get_model().set_visible_func(filter_func)
 
     def __onChange(self, data):
             if isinstance(self.sourceList.get_model(), Gtk.TreeModelFilter):
@@ -58,23 +79,6 @@ class RepositoryList(Gtk.Box):
         self.pack_start(sourceScroll, True, True, 0)
 
     def __loadList(self):
-        self.searchEntry.set_text('')
-        newStore = Gtk.ListStore(str)
+        for repo in self.sourceProvider.repositories:
+            self.__addRepository(repo)
 
-        def async(self):
-            for repository in self.sourceProvider.repositories:
-                text = "<span weight=\"bold\">%s</span>\n<span size=\"smaller\" weight=\"light\">%s</span>" % (
-                    repository.name, repository.description)
-                newStore.append([text])
-
-            def filter_func(model, iter, *args):
-                search = '.*' + self.searchEntry.get_text().lower() + '.*'
-                return re.match(search, model.get_value(iter, 0).lower()) is not None
-
-            filter = newStore.filter_new()
-
-            GLib.idle_add(filter.set_visible_func, filter_func)
-            GLib.idle_add(self.sourceList.set_model, filter)
-            GLib.idle_add(self.sourceList.show)
-
-        threading.Thread(target=async, args=(self, )).start()

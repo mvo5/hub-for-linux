@@ -19,6 +19,12 @@
 # this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 
+import threading
+
+from gi.repository import GLib
+
+from hublinux.ui.widgets.toolbar.RefreshButtomItem import RefreshButtonItem
+
 from hublinux.backend.ProviderImpl import Provider, SourceProvider, RepositoryProvider
 from hublinux.backend.Github import Github
 
@@ -33,8 +39,10 @@ class GithubProvider(Provider):
         return result
 
 class GithubSourceProvider(SourceProvider):
+
     def __init__(self, source):
         self.source = source
+        super(GithubSourceProvider, self).__init__()
 
     @property
     def name(self):
@@ -44,17 +52,25 @@ class GithubSourceProvider(SourceProvider):
     def image(self):
         return Github.getAvatarPixbuf(self.source, (24, 24))
 
-    @property
-    def repositories(self):
-        result = []
-        for repo in self.source.get_repos():
-            result.append(GithubResopitoryProvider(repo))
+    def doScanRepositories(self):
+        def scan(self):
+            GLib.idle_add(RefreshButtonItem.startLoading)
+            for repo in self.source.get_repos():
+                self._findRepository(repo)
+            GLib.idle_add(RefreshButtonItem.stopLoading)
 
-        return result
+        threading.Thread(target=scan, args=(self,)).start()
 
-class GithubResopitoryProvider(RepositoryProvider):
+    def _getRepositoryProvider(self, repo):
+        return GithubRepositoryProvider(repo)
+
+class GithubRepositoryProvider(RepositoryProvider):
     def __init__(self, repository):
         self.repository = repository
+
+    @property
+    def id(self):
+        return self.repository.id
 
     @property
     def name(self):
@@ -63,5 +79,3 @@ class GithubResopitoryProvider(RepositoryProvider):
     @property
     def description(self):
         return self.repository.description
-
-Provider.register(GithubProvider)
