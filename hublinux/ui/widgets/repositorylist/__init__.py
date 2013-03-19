@@ -38,7 +38,11 @@ class RepositoryList(Gtk.Box):
 
         self.__initUI()
         self.__loadList()
-        #self.searchEntry.connect('changed', self.__onChange)
+        self.searchEntry.connect('changed', self.__onChange)
+
+    def __onChange(self, data):
+            if isinstance(self.sourceList.get_model(), Gtk.TreeModelFilter):
+                self.sourceList.get_model().refilter()
 
     def __initUI(self):
         self.pack_start(self.searchEntry, False, True, 0)
