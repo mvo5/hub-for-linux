@@ -1,0 +1,67 @@
+# -*- coding: utf-8 -*-
+# Copyright (C) 2013 Peter Golm
+#
+# Authors:
+#  Peter Golm <golm.peter@gmail.com>
+#
+# This file is part of hub:linux.
+#
+# hub:linux is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation; version 3.
+#
+# hub:linux is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+
+from hublinux.backend.ProviderImpl import Provider, SourceProvider, RepositoryProvider
+from hublinux.backend.Github import Github
+
+class GithubProvider(Provider):
+    @property
+    def sources(self):
+        user = Github.getGithub().get_user()
+        result = [GithubSourceProvider(user)]
+        for org in user.get_orgs():
+            result.append(GithubSourceProvider(org))
+
+        return result
+
+class GithubSourceProvider(SourceProvider):
+    def __init__(self, source):
+        self.source = source
+
+    @property
+    def name(self):
+        return self.source.login
+
+    @property
+    def image(self):
+        return Github.getAvatarPixbuf(self.source, (24, 24))
+
+    @property
+    def repositories(self):
+        result = []
+        for repo in self.source.get_repos():
+            result.append(GithubResopitoryProvider(repo))
+
+        return result
+
+class GithubResopitoryProvider(RepositoryProvider):
+    def __init__(self, repository):
+        self.repository = repository
+
+    @property
+    def name(self):
+        return self.repository.full_name
+
+    @property
+    def description(self):
+        return self.repository.description
+
+Provider.register(GithubProvider)

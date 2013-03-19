@@ -22,6 +22,7 @@ from gi.repository import Gtk
 from hublinux.Constant import APP_NAME, WINDOW_SIZE
 from hublinux.ui.app.StatusIcon import StatusIcon
 from hublinux.ui.widgets.toolbar import Toolbar
+from hublinux.ui.panel.MainPanel import MainPanel
 
 class Window(Gtk.ApplicationWindow):
 
@@ -31,6 +32,8 @@ class Window(Gtk.ApplicationWindow):
         self.statusIcon = StatusIcon(self.application)
         self.layout = Gtk.Box()
         self.toolBar = Toolbar(self.application)
+
+        self.mainPanel = MainPanel()
 
         self.set_default_size(WINDOW_SIZE[0], WINDOW_SIZE[1])
         self.set_position(Gtk.WindowPosition.CENTER)
@@ -44,10 +47,9 @@ class Window(Gtk.ApplicationWindow):
         """
         initialize the UI
         """
-
         self.layout.set_orientation(Gtk.Orientation.VERTICAL)
         self.layout.pack_start(self.toolBar, False, True, 0)
-        self.layout.pack_start(Gtk.Label("Need implementation."), True, True, 0)
+        self.layout.pack_start(self.mainPanel, True, True, 0)
         self.add(self.layout)
 
     def __initSignals(self):
