@@ -20,8 +20,11 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 
 import re
+import logging
 
 from gi.repository import Gtk, GLib
+
+LOG = logging.getLogger(__name__)
 
 class RepositoryList(Gtk.Box):
 
@@ -39,12 +42,20 @@ class RepositoryList(Gtk.Box):
 
         self.__initUI()
         self.sourceProvider.connect('add-repository', self.__onAddRepository)
+        self.sourceProvider.connect('remove-repository', self.__onRemoveRepository)
+        self.sourceProvider.connect('update-repository', self.__onUpdateRepository)
         self.searchEntry.connect('changed', self.__onChange)
 
         self.__loadList()
 
-    def __onAddRepository(self, provider, pos):
-        self.__addRepository(provider.repositories[pos])
+    def __onAddRepository(self, provider, id):
+        self.__addRepository(provider.get_repository(id))
+
+    def __onRemoveRepository(self, provider, id):
+        LOG.info('onRemoveRepo(%s)' % id)
+
+    def __onUpdateRepository(self, provider, id):
+        LOG.info('onUpdateRepo(%s)' % id)
 
     def __addRepository(self, repo):
         text = "<span weight=\"bold\">%s</span>\n<span size=\"smaller\" weight=\"light\">%s</span>" % (

@@ -53,7 +53,7 @@ class Window(Gtk.ApplicationWindow):
         self.add(self.layout)
 
     def __initSignals(self):
-        self.connect('delete-event', self.__onHide)
+        self.connect('delete-event', self.__onHide)# hide on close button
 
     def __onHide(self, *args):
         self.hide()

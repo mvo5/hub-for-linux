@@ -53,11 +53,13 @@ class GithubSourceProvider(SourceProvider):
         return Github.getAvatarPixbuf(self.source, (24, 24))
 
     def doScanRepositories(self):
+        self._startScan()#start scan
         def scan(self):
             GLib.idle_add(RefreshButtonItem.startLoading)
             for repo in self.source.get_repos():
                 self._findRepository(repo)
             GLib.idle_add(RefreshButtonItem.stopLoading)
+            GLib.idle_add(self._endScan)#finished scan
 
         threading.Thread(target=scan, args=(self,)).start()
 

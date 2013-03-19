@@ -22,7 +22,6 @@
 from gi.repository import GObject, GLib
 
 class Provider(GObject.GObject):
-
     def __init__(self):
         super(Provider, self).__init__()
 
@@ -33,15 +32,17 @@ class Provider(GObject.GObject):
         """
         raise NotImplementedError
 
+
 class SourceProvider(GObject.GObject):
     __gsignals__ = {
-        'add-repository' : (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE,(GObject.TYPE_INT,)),
-        'remove-repository' : (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE,()),
-        'update-repository' : (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE,())
+        'add-repository': (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+        'remove-repository': (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, (GObject.TYPE_STRING,)),
+        'update-repository': (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, (GObject.TYPE_STRING,))
     }
 
     def __init__(self):
-        self.__repositoryList = []
+        # TODO: need persistent caching
+        self.__repositoryList = {}
         self.doScanRepositories()
 
         super(SourceProvider, self).__init__()
@@ -54,12 +55,33 @@ class SourceProvider(GObject.GObject):
     def name(self):
         raise NotImplementedError
 
+    def get_repository(self, id):
+        return self.__repositoryList[id]
+
     @property
     def repositories(self):
-        return self.__repositoryList
+        return self.__repositoryList.values()
 
     def doScanRepositories(self):
         raise NotImplementedError
+
+    def _startScan(self):
+        """
+        Should be called from doScanRepositories before started
+        """
+        self.__refoundedRepositories = {}
+
+    def _endScan(self):
+        """
+        Should be called from doScanRepositories after finished
+        """
+        for repo in self.repositories:
+            if not self.__refoundedRepositories.has_key(repo.id):
+                pass
+                #self.__repositoryList.pop(repo.id)
+                #self.emit('remove-repository', repo.id)
+
+        self.__refoundedRepositories = None
 
     def _getRepositoryProvider(self, repo):
         raise NotImplementedError
@@ -67,17 +89,32 @@ class SourceProvider(GObject.GObject):
     def _findRepository(self, repo):
         def func(self, repo):
             repo = self._getRepositoryProvider(repo)
-            if repo not in self.__repositoryList:
-                self.__repositoryList.append(repo)
-                pos = len(self.__repositoryList) - 1
-                self.emit('add-repository', pos)
+            # unknow repo?
+            if not self.__repositoryList.has_key(repo.id):
+                self.__repositoryList[repo.id] = repo
+                self.emit('add-repository', repo.id)
+            # any changes in known repo?
+            elif self.__repositoryList.has_key(repo.id) and\
+                 self.__repositoryList[repo.id].needUpdate(repo):
+                self.__repositoryList[repo.id] = repo
+                self.emit('update-repository', repo.id)
+
+            if self.__refoundedRepositories is not None:
+                self.__refoundedRepositories[repo.id] = repo
 
         GLib.idle_add(func, self, repo)
 
-class RepositoryProvider(GObject.GObject):
 
-    def __eq__(self, other):
-        return self.id == other.id
+class RepositoryProvider(GObject.GObject):
+    def needUpdate(self, other):
+        """
+        return true if the object need a update
+        self and other must be the same object -> same id
+        """
+        if self.id != other.id:
+            raise TypeError
+
+        return self.name != other.name and self.description != other.description
 
     @property
     def id(self):

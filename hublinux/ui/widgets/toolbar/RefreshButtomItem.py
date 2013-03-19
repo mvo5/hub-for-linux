@@ -56,6 +56,7 @@ class RefreshButtonItem(Gtk.ToolItem):
     def __init__(self):
         super(RefreshButtonItem, self).__init__()
         self.__eventbus = RefreshButtonItem._EventBus()
+        self.__lastConnectedRefreshListener = -1
 
         self.layout = Gtk.Box()
         self.refreshButton = Gtk.Button()
@@ -64,7 +65,6 @@ class RefreshButtonItem(Gtk.ToolItem):
 
         self.__eventbus.connect('start-loading', self.__onStartLoading)
         self.__eventbus.connect('stop-loading', self.__onStopLoading)
-        self.refreshButton.connect('clicked', self.__onRefreshButtonClick)
 
         self.__initUI()
 
@@ -76,8 +76,12 @@ class RefreshButtonItem(Gtk.ToolItem):
     def stopLoading():
         RefreshButtonItem._EventBus().stop()
 
-    def __onRefreshButtonClick(self, *args):
-        LOG.info('Not implemented.')
+    def singleConnectRefreshButtonClicked(self, listener):
+        if self.__lastConnectedRefreshListener != -1:
+            self.refreshButton.disconnect(self.__lastConnectedRefreshListener)
+
+        self.__lastConnectedRefreshListener = self.refreshButton.connect('clicked', listener)
+        return self.__lastConnectedRefreshListener
 
     def __onShow(self):
         self.refreshButton.show()

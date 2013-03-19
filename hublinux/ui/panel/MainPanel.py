@@ -24,6 +24,8 @@ from gi.repository import Gtk
 from hublinux.ui.widgets.sourcelist import SourceList
 from hublinux.ui.widgets.repositorylist import RepositoryList
 
+from hublinux.ui.widgets.toolbar import Toolbar
+
 class MainPanel(Gtk.Box):
 
     def __init__(self):
@@ -45,5 +47,10 @@ class MainPanel(Gtk.Box):
         self.repositoryBin.show_all()
 
     def __onSourceSelected(self, btn, sourceProvider):
-        self.__setRepositoryWidget(RepositoryList(sourceProvider))
-        
+        repositoryList = RepositoryList(sourceProvider)
+        self.__setRepositoryWidget(repositoryList)
+
+        def sourceRescan(*args):
+            sourceProvider.doScanRepositories()
+
+        Toolbar.refreshItem.singleConnectRefreshButtonClicked(sourceRescan)

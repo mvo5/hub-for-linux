@@ -34,6 +34,7 @@ class MenuButtonItem(Gtk.ToolItem):
         icon = Gtk.Image()
         icon.set_from_stock(Gtk.STOCK_PROPERTIES, Gtk.IconSize.LARGE_TOOLBAR)
         self.menuButton.set_image(icon)
+        # align menu position
         self.menuButton.set_halign(Gtk.Align.END) # FIXME: don't work, why?
         self.menuButton.set_menu_model(ToolbarMenu(self.application))
         self.menuButton.set_relief(Gtk.ReliefStyle.NONE)
