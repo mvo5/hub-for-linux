@@ -19,6 +19,7 @@
 # this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 
+from threading import Lock, Thread
 from gi.repository import GObject, GLib
 
 class Provider(GObject.GObject):
@@ -43,6 +44,7 @@ class SourceProvider(GObject.GObject):
     def __init__(self):
         # TODO: need persistent caching
         self.__repositoryList = {}
+        self.__scanLock = Lock()
         self.doScanRepositories()
 
         super(SourceProvider, self).__init__()
@@ -55,6 +57,15 @@ class SourceProvider(GObject.GObject):
     def name(self):
         raise NotImplementedError
 
+    def _doScanRepositories(self):
+        """
+        Must be implemented by super classes
+        """
+        raise NotImplementedError
+
+    def _getRepositoryProvider(self, repo):
+        raise NotImplementedError
+
     def get_repository(self, id):
         return self.__repositoryList[id]
 
@@ -63,46 +74,44 @@ class SourceProvider(GObject.GObject):
         return self.__repositoryList.values()
 
     def doScanRepositories(self):
-        raise NotImplementedError
+        def async(self):
+            self.__startScan()
+            try:
+                self._doScanRepositories()
+            finally:
+                self.__endScan()
+        t = Thread(target=async, args=(self, ))
+        t.start()
 
-    def _startScan(self):
-        """
-        Should be called from doScanRepositories before started
-        """
+    def __startScan(self):
+        self.__scanLock.acquire()
         self.__refoundedRepositories = {}
 
-    def _endScan(self):
-        """
-        Should be called from doScanRepositories after finished
-        """
+    def __endScan(self):
         for repo in self.repositories:
             if not self.__refoundedRepositories.has_key(repo.id):
                 pass
-                #self.__repositoryList.pop(repo.id)
-                #self.emit('remove-repository', repo.id)
+                self.__repositoryList.pop(repo.id)
+                self.emit('remove-repository', repo.id)
 
         self.__refoundedRepositories = None
-
-    def _getRepositoryProvider(self, repo):
-        raise NotImplementedError
+        self.__scanLock.release();
 
     def _findRepository(self, repo):
-        def func(self, repo):
-            repo = self._getRepositoryProvider(repo)
-            # unknow repo?
-            if not self.__repositoryList.has_key(repo.id):
-                self.__repositoryList[repo.id] = repo
-                self.emit('add-repository', repo.id)
-            # any changes in known repo?
-            elif self.__repositoryList.has_key(repo.id) and\
-                 self.__repositoryList[repo.id].needUpdate(repo):
-                self.__repositoryList[repo.id] = repo
-                self.emit('update-repository', repo.id)
+        repo = self._getRepositoryProvider(repo)
+        # unknow repo?
+        if not self.__repositoryList.has_key(repo.id):
+            self.__repositoryList[repo.id] = repo
+            self.emit('add-repository', repo.id)
+        # any changes in known repo?
+        elif self.__repositoryList.has_key(repo.id) and\
+             self.__repositoryList[repo.id].needUpdate(repo):
+            self.__repositoryList[repo.id] = repo
+            self.emit('update-repository', repo.id)
 
-            if self.__refoundedRepositories is not None:
-                self.__refoundedRepositories[repo.id] = repo
-
-        GLib.idle_add(func, self, repo)
+        # remember this repo
+        if self.__refoundedRepositories is not None:
+            self.__refoundedRepositories[repo.id] = repo
 
 
 class RepositoryProvider(GObject.GObject):

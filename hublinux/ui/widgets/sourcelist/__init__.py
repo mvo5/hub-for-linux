@@ -44,16 +44,16 @@ class SourceList(Gtk.Box):
 
     def __initUI(self):
         # init local
-        title = Gtk.Label()
-        text = "<span size=\"larger\">%s</span>" % _('local')
-        title.set_markup(text)
-
-        box = Gtk.Box()
-        box.pack_start(title, False, True, 0)
-        box.pack_start(Gtk.Label(), True, True, 0)
-        self.pack_start(box, False, True, 0)
-
-        self.pack_start(self.localSourceBox, False, True, 0)
+#        title = Gtk.Label()
+#        text = "<span size=\"larger\">%s</span>" % _('local')
+#        title.set_markup(text)
+#
+#        box = Gtk.Box()
+#        box.pack_start(title, False, True, 0)
+#        box.pack_start(Gtk.Label(), True, True, 0)
+#        self.pack_start(box, False, True, 0)
+#
+#        self.pack_start(self.localSourceBox, False, True, 0)
 
         # init github
         title = Gtk.Label()

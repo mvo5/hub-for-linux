@@ -21,6 +21,8 @@
 
 import logging
 
+from threading import Lock
+
 from gi.repository import Gtk, GObject
 
 LOG = logging.getLogger(__name__)
@@ -32,7 +34,8 @@ class RefreshButtonItem(Gtk.ToolItem):
             'stop-loading' : (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE,())
         }
 
-        loadCounter = 0
+        __loadCounter = 0
+        __loadCounterLock=Lock()
         _instance = None
         def __new__(cls, *args, **kwargs):
             if not cls._instance:
@@ -44,14 +47,22 @@ class RefreshButtonItem(Gtk.ToolItem):
             super(RefreshButtonItem._EventBus, self).__init__()
 
         def start(self):
-            self.loadCounter += 1
-            if self.loadCounter > 0:
+            self.__loadCounterLock.acquire()
+
+            self.__loadCounter += 1
+            if self.__loadCounter > 0:
                 self.emit('start-loading')
 
+            self.__loadCounterLock.release()
+
         def stop(self):
-            self.loadCounter -= 1
-            if self.loadCounter == 0:
+            self.__loadCounterLock.acquire()
+
+            self.__loadCounter -= 1
+            if self.__loadCounter == 0:
                 self.emit('stop-loading')
+
+            self.__loadCounterLock.release()
 
     def __init__(self):
         super(RefreshButtonItem, self).__init__()
