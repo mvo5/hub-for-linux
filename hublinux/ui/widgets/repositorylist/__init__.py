@@ -49,6 +49,7 @@ class RepositoryList(Gtk.Box):
         self.__loadList()
 
     def __onAddRepository(self, provider, id):
+        LOG.info('onAddRepo(%s)' % id)
         self.__addRepository(provider.get_repository(id))
 
     def __onRemoveRepository(self, provider, id):
