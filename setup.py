@@ -17,17 +17,36 @@
 # this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 
+import glob
 import setuptools
 
 VERSION = "0.0.1"
 
-if __name__ == "__main__":
-    setuptools.setup(
-        name="hub:linux",
-        version=VERSION,
-        description="Github for Linux",
-        author="Peter Golm",
-        author_email="golm.peter@gmail.com",
-        url="https://github.com/pgolm/hub-for-linux",
-        package=["hublinux"]
-    )
+setuptools.setup(
+    name="hub:linux",
+    version=VERSION,
+    description="Github for Linux",
+    author="Peter Golm",
+    author_email="golm.peter@gmail.com",
+    url="https://github.com/pgolm/hub-for-linux",
+    packages=[
+        "assets",
+        "data",
+        "hublinux",
+        "hublinux.backend",
+        "hublinux.backend.ProviderImpl",
+        "hublinux.ui",
+        "hublinux.ui.app",
+        "hublinux.ui.assistant",
+        "hublinux.ui.menu",
+        "hublinux.ui.panel",
+        "hublinux.ui.widgets",
+        "hublinux.ui.widgets.repositorylist",
+        "hublinux.ui.widgets.sourcelist",
+        "hublinux.ui.widgets.toolbar",
+    ],
+    package_data={
+        'assets': ['*'],
+        'data': ['schema/*']},
+    py_modules=["hublinux"],
+)
