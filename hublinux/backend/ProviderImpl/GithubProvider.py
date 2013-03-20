@@ -23,10 +23,10 @@ import threading
 
 from gi.repository import GLib
 
-from hublinux.ui.widgets.toolbar.RefreshButtomItem import RefreshButtonItem
-
 from hublinux.backend.ProviderImpl import Provider, SourceProvider, RepositoryProvider
 from hublinux.backend.Github import Github
+
+from hublinux.EventBus import LoadingEventBus
 
 class GithubProvider(Provider):
     @property
@@ -53,10 +53,10 @@ class GithubSourceProvider(SourceProvider):
         return Github.getAvatarPixbuf(self.source, (24, 24))
 
     def _doScanRepositories(self):
-        RefreshButtonItem.startLoading()
+        LoadingEventBus().start()
         for repo in self.source.get_repos():
             self._findRepository(repo)
-        RefreshButtonItem.stopLoading()
+        LoadingEventBus().stop()
 
     def _getRepositoryProvider(self, repo):
         return GithubRepositoryProvider(repo)

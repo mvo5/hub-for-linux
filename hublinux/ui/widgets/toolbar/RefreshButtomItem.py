@@ -21,52 +21,16 @@
 
 import logging
 
-from threading import Lock
-
 from gi.repository import Gtk, GObject
+
+from hublinux.EventBus import LoadingEventBus
 
 LOG = logging.getLogger(__name__)
 
 class RefreshButtonItem(Gtk.ToolItem):
-    class _EventBus(GObject.GObject):
-        __gsignals__ = {
-            'start-loading' : (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE,()),
-            'stop-loading' : (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE,())
-        }
-
-        __loadCounter = 0
-        __loadCounterLock=Lock()
-        _instance = None
-        def __new__(cls, *args, **kwargs):
-            if not cls._instance:
-                cls._instance = super(RefreshButtonItem._EventBus, cls).__new__(
-                    cls, *args, **kwargs)
-            return cls._instance
-
-        def __init__(self):
-            super(RefreshButtonItem._EventBus, self).__init__()
-
-        def start(self):
-            self.__loadCounterLock.acquire()
-
-            self.__loadCounter += 1
-            if self.__loadCounter > 0:
-                self.emit('start-loading')
-
-            self.__loadCounterLock.release()
-
-        def stop(self):
-            self.__loadCounterLock.acquire()
-
-            self.__loadCounter -= 1
-            if self.__loadCounter == 0:
-                self.emit('stop-loading')
-
-            self.__loadCounterLock.release()
-
     def __init__(self):
         super(RefreshButtonItem, self).__init__()
-        self.__eventbus = RefreshButtonItem._EventBus()
+        self.__eventbus = LoadingEventBus()
         self.__lastConnectedRefreshListener = -1
 
         self.layout = Gtk.Box()
@@ -78,14 +42,6 @@ class RefreshButtonItem(Gtk.ToolItem):
         self.__eventbus.connect('stop-loading', self.__onStopLoading)
 
         self.__initUI()
-
-    @staticmethod
-    def startLoading():
-        RefreshButtonItem._EventBus().start()
-
-    @staticmethod
-    def stopLoading():
-        RefreshButtonItem._EventBus().stop()
 
     def singleConnectRefreshButtonClicked(self, listener):
         if self.__lastConnectedRefreshListener != -1:

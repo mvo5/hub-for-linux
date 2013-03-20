@@ -23,14 +23,14 @@ import httplib2
 
 import github
 
-#noinspection PyUnresolvedReferences
 from gi.repository import GLib
+#noinspection PyUnresolvedReferences
 from gi.repository.GdkPixbuf import PixbufLoader, InterpType
 
 from hublinux.Constant import CACHE_DIR
 from hublinux.Config import HubLinuxConfig
 
-from hublinux.ui.widgets.toolbar.RefreshButtomItem import RefreshButtonItem
+from hublinux.EventBus import LoadingEventBus
 
 class Github(object):
 
@@ -53,7 +53,7 @@ class Github(object):
 
     @staticmethod
     def getAvatarPixbuf(avatarObj=None, size=None):
-        GLib.idle_add(RefreshButtonItem.startLoading)# start loading indicator
+        GLib.idle_add(LoadingEventBus().start)# start loading indicator
         if avatarObj is None:
             avatarObj = Github.getGithub().get_user()
 
@@ -66,7 +66,7 @@ class Github(object):
         loader.write(content)
         loader.close()
 
-        GLib.idle_add(RefreshButtonItem.stopLoading)# stop loading indicator
+        GLib.idle_add(LoadingEventBus().stop)# stop loading indicator
         if size is None:
             return loader.get_pixbuf()
         else:
