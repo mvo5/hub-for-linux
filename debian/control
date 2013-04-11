@@ -1,0 +1,14 @@
+Source: hublinux
+Section: misc
+Priority: extra
+Standards-Version: 3.9.3
+Maintainer: Peter Golm <golm.peter@gmail.com>
+Build-Depends: python-all, python-setuptools, debhelper (>= 7)
+
+Package: hublinux
+Architecture: all
+Section: misc
+Priority: extra
+Depends: ${python:Depends}, ${misc:Depends}
+Description: Github for Linux
+ A github UI
