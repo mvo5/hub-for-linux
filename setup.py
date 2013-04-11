@@ -49,4 +49,5 @@ setuptools.setup(
         'assets': ['*'],
         'data': ['schema/*']},
     py_modules=["hublinux"],
+    scripts=["hublinux.py"],
 )
