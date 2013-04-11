@@ -18,11 +18,12 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 
 import glob
-import setuptools
+import os
+from DistUtilsExtra.auto import setup
 
 VERSION = "0.0.1"
 
-setuptools.setup(
+setup(
     name="hub:linux",
     version=VERSION,
     description="Github for Linux",
@@ -32,6 +33,7 @@ setuptools.setup(
     packages=[
         "assets",
         "data",
+        "data.schema",
         "hublinux",
         "hublinux.backend",
         "hublinux.backend.ProviderImpl",
@@ -45,8 +47,7 @@ setuptools.setup(
         "hublinux.ui.widgets.sourcelist",
         "hublinux.ui.widgets.toolbar",
     ],
-    package_data={
-        'assets': ['*'],
-        'data': ['schema/*']},
-    py_modules=["hublinux"],
+    #package_data={
+    #    'assets': ['*'],
+    #    'data': ['schema/*']},
 )

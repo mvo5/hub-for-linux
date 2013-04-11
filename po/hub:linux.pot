@@ -1,0 +1,122 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-03-21 23:52+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. show/hide
+#: ../hublinux/ui/app/StatusIcon.py:38
+msgid "Show/Hide"
+msgstr ""
+
+#. quit
+#: ../hublinux/ui/app/StatusIcon.py:44 ../hublinux/ui/menu/AppMenu.py:31
+#: ../hublinux/ui/menu/__init__.py:41
+msgid "Quit"
+msgstr ""
+
+#: ../hublinux/ui/menu/AppMenu.py:30 ../hublinux/ui/menu/__init__.py:40
+msgid "Close"
+msgstr ""
+
+#: ../hublinux/ui/assistant/AccountPage.py:40
+#: ../hublinux/ui/assistant/AccountPage.py:122
+#: ../hublinux/ui/assistant/AccountPage.py:125
+msgid "username/email"
+msgstr ""
+
+#: ../hublinux/ui/assistant/AccountPage.py:45
+#: ../hublinux/ui/assistant/AccountPage.py:132
+#: ../hublinux/ui/assistant/AccountPage.py:136
+msgid "password"
+msgstr ""
+
+#: ../hublinux/ui/assistant/AccountPage.py:89
+#, python-format
+msgid "%s plan (%i private repositories)"
+msgstr ""
+
+#. login button
+#: ../hublinux/ui/assistant/AccountPage.py:142
+msgid "login"
+msgstr ""
+
+#: ../hublinux/ui/assistant/AccountPage.py:155
+msgid "logged in as"
+msgstr ""
+
+#. logout button
+#: ../hublinux/ui/assistant/AccountPage.py:171
+msgid "logout"
+msgstr ""
+
+#: ../hublinux/ui/panel/ConfigPanel.py:35
+msgid "Choose your local project directory"
+msgstr ""
+
+#: ../hublinux/ui/panel/ConfigPanel.py:43
+msgid "git config"
+msgstr ""
+
+#: ../hublinux/ui/panel/ConfigPanel.py:53
+msgid "Choose your local project directory:"
+msgstr ""
+
+#: ../hublinux/ui/assistant/WelcomePage.py:39
+msgid "Welcome to hub:linux! You need to setup your github account first."
+msgstr ""
+
+#: ../hublinux/ui/widgets/sourcelist/__init__.py:60
+msgid "github"
+msgstr ""
+
+#: ../hublinux/ui/app/Window.py:75
+#, python-format
+msgid "Try to open: %s."
+msgstr ""
+
+#: ../hublinux/ui/menu/__init__.py:36
+msgid "Settings"
+msgstr ""
+
+#: ../hublinux/ui/menu/__init__.py:39
+msgid "Logout"
+msgstr ""
+
+#: ../hublinux/ui/assistant/__init__.py:38
+#, python-format
+msgid "%s Setup Assistant"
+msgstr ""
+
+#: ../hublinux/ui/assistant/__init__.py:50
+msgid "Welcome"
+msgstr ""
+
+#: ../hublinux/ui/assistant/__init__.py:57
+msgid "Connect"
+msgstr ""
+
+#: ../hublinux/ui/assistant/__init__.py:63
+msgid "Configuration"
+msgstr ""
+
+#: ../hublinux/ui/assistant/__init__.py:70
+msgid "Summary"
+msgstr ""
+
+#: ../hublinux/ui/assistant/SummaryPage.py:35
+msgid "You're finish now. Happy developing!"
+msgstr ""
